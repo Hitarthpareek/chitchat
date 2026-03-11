@@ -2,6 +2,8 @@ import express from "express";
 import  User from "../models/User.js"
 import bcrypt from "bcryptjs"
 import { generateToken } from "../lib/utils.js";
+import {ENV} from "../lib/env.js"
+import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 
 export const signup = async (req, res) => {
   const {fullName, email, password} = req.body;
@@ -34,7 +36,7 @@ export const signup = async (req, res) => {
             password:hashedPassword
         })
         if(newUser){
-            
+            // after cr suggestion
            const savedUser = await newUser.save();
            generateToken(savedUser._id,res);
 // 201 means new created 
@@ -46,7 +48,12 @@ export const signup = async (req, res) => {
 
             });
 
-         // send a welcome email to user   
+         // send a welcome email to user  
+         try {
+        await sendWelcomeEmail(savedUser.email, savedUser.fullName, ENV.CLIENT_URL);
+      }  catch (error) {
+        console.error("Failed to send welcome email:", error);
+      } 
         }else{
             res.status(404).json({message:"Invalid user data"});
         }
