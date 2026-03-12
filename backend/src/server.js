@@ -4,11 +4,13 @@ import messageRoutes from "./routes/message.route.js"
 import path from "path"
 import { connectDB } from "./lib/db.js"
 import {ENV} from "./lib/env.js"
+import cookieParser from "cookie-parser"
 
 const __dirname =  path.resolve();
 const PORT = ENV.PORT || 3000;
 const app = express(); 
 app.use(express.json()) // middleware so we can access fields that user sends under req.body
+app.use(cookieParser())
 
 
 app.use("/api/auth",authRoutes);
